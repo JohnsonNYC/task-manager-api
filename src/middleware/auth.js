@@ -11,7 +11,7 @@ const auth = async (req,res,next) => { // Used on routes where user should be lo
     if(!user){
       throw new Error()
     }
-    
+    req.token = token  
     req.user = user // No need for route handler to fetch user again so we add property to request
     next() // allows route handler to be used if all goes well
   }catch(e){
