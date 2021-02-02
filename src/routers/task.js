@@ -5,6 +5,9 @@ const auth = require('../middleware/auth')
 
 
 router.get('/tasks', auth, async (req,res) => {
+  //Sortby used to sort the information provided
+  //Get/task?sortBy=createdAt:desc <= descending pattern
+
   // Limit and Skip used for Pagination 
   // Get/task?limit=10&skip=0 <= give me the first 10 tasks
   // Get/task?limit=10&skip=10 <= give me the second 10 tasks
@@ -12,9 +15,14 @@ router.get('/tasks', auth, async (req,res) => {
 
   // Match and Logic for match used to Filter through data 
   const match = {}
-
+  const sort = {}
   if(req.query.completed){ // Acceses the query from the url like 'completed?'
     match.completed = req.query.completed === 'true' // append the query to the match obj based of the query 
+  }
+
+  if(req.query.sortBy){
+    const parts =  req.query.sortBy.split(':')
+    sort[parts[0]] = parts[1] === 'desc'? -1: 1;
   }
   try{
     // const tasks = await Task.find({owner: req.user._id}) One way of doing it or you can populate using user
@@ -23,7 +31,8 @@ router.get('/tasks', auth, async (req,res) => {
       match,
       options:{
         limit: parseInt(req.query.limit), // query string is string so this needs to be parsed into integer
-        skip: parseInt(req.query.skip)
+        skip: parseInt(req.query.skip),
+        sort
       }
     }).execPopulate()
     res.send(req.user.tasks) // changed from task to req.user.tasks as we're taking advantage of monogoose association
