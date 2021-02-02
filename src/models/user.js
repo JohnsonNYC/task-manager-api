@@ -3,6 +3,8 @@ const validator = require('validator')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const Task = require('./task')
+
+
 const userSchema = new mongoose.Schema({
   name:{
     type: String,
@@ -47,6 +49,8 @@ const userSchema = new mongoose.Schema({
       required: true
     }
   }]
+}, {
+  timestamps: true
 })
 
 // Realtionship betweeen two properties User and Task. This is not on the database but just on Mongoose

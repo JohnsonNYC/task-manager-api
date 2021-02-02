@@ -5,9 +5,17 @@ const auth = require('../middleware/auth')
 
 
 router.get('/tasks', auth, async (req,res) => {
+  const match = {}
+
+  if(req.query.completed){ // Acceses the query from the url like 'completed?'
+    match.completed = req.query.completed === 'true' // append the query to the match obj based of the query 
+  }
   try{
     // const tasks = await Task.find({owner: req.user._id}) One way of doing it or you can populate using user
-    await req.user.populate('tasks').execPopulate()
+    await req.user.populate({
+      path:'tasks', // allows us to make requests based on query parameter on the URL 
+      match
+    }).execPopulate()
     res.send(req.user.tasks) // changed from task to req.user.tasks as we're taking advantage of monogoose association
   }catch(e){
     res.send(e).status(500)
