@@ -2,6 +2,7 @@ const express = require('express')
 const router = new express.Router(); // attach router to project with app.use() inside of index.js
 const User = require('../models/user')// Accesses model to be used at differenct endpoints
 const auth = require('../middleware/auth')
+const multer = require('multer')
 // Public Routes include sign up and login 
 // Everything else will require an authentication token
 
@@ -31,6 +32,13 @@ router.post('/users/login', async (req,res) => {
   }catch(e){
     res.status(400).send()
   }
+})
+
+const upload = multer({
+  dest:'avatars'
+})
+router.post('/users/me/avatar', upload.single('avatar'),(req,res) => {
+  res.send()
 })
 
 router.post('/users/logout', auth, async (req,res) => {
