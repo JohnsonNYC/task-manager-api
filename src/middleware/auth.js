@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const auth = async (req,res,next) => { // Used on routes where user should be logged in. So we check tokens
   try{
     const token = req.header('Authorization').replace("Bearer ", "") // token from request
-    const decoded = jwt.verify(token, 'thisismyauthentication')// returns {_id:<string>, iat:<integers>} where _id was created as path of generate Auth Token instance method
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)// returns {_id:<string>, iat:<integers>} where _id was created as path of generate Auth Token instance method
     const user = await User.findOne({ _id: decoded._id, 'tokens.token':token})
     // find user with the correct id with this token stored in token array 
 

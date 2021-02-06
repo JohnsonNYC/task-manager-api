@@ -78,7 +78,7 @@ userSchema.methods.toJSON = function(){
 userSchema.methods.generateAuthToken = async function(){
   const user = this;
 
-  const token = jwt.sign({_id: user.id.toString()},'thisismyauthentication') 
+  const token = jwt.sign({_id: user.id.toString()},process.env.JWT_SECRET) 
   //creates token with body consisting of the user.id as part of the payload. Used in auth middleware
   
   user.tokens = user.tokens.concat({token})
