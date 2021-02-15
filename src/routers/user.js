@@ -108,7 +108,7 @@ router.post('/users/logoutAll', auth, async (req,res) => { // remove all tokens 
 
 // Read User
 router.get('/users/me',auth ,async (req,res) => {
-  res.send(req.user)
+    res.send(req.user)
 })
 
 router.patch('/users/me', auth, async(req, res)=>{

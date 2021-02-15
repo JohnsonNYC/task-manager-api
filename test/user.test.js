@@ -1,13 +1,21 @@
-const request = require('supertest')
+const request = require('supertest') // allows testing for endpoints before 'app.listen()'
+const jwt = require('jsonwebtoken')
+const mongoose = require('mongoose')
 const app = require('../src/app')
 const User = require('../src/models/user')
 
+const userOneID = new mongoose.Types.ObjectId(); // Needed for ID and Tokens 
 
 const userOne = ({
+  _id: userOneID,
   name:'Mike',
   email: 'mike@example.com',
-  password: 'What1244!'
+  password: 'What1244!',
+  tokens:[{
+    token: jwt.sign({_id: userOneID}, process.env.JWT_SECRET)
+  }]
 })
+
 beforeEach(async () => {// provided by Jest and will be used to wipe out database. Lifecycle method
   // wipe all users in database 
   await User.deleteMany()
@@ -34,4 +42,19 @@ test('Should not login nonexistent user', async() => {
     email: userOne.email,
     password: 'Nonexistent123'
   }).expect(400)
+})
+
+test('Should get profile for users', async() =>{ // Need header so we chain the .set() method to request
+  await request(app)
+    .get('/users/me')
+    .set('Authorization', `Bearer ${userOne.tokens[0].token}`) // Will be used anytime we need authorization header
+    .send()
+    .expect(200)
+})
+
+test('Should not get profile for unauthenitated user', async() =>{
+  await request(app)
+    .get('/users/me')
+    .send()
+    .expect(401)
 })
